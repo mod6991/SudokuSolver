@@ -1,11 +1,6 @@
 """
-Starting Template
-
-Once you have learned how to use classes, you can begin your program with this
-template.
-
-If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.starting_template
+Sudoku solver
+Josué Clément (2021)
 """
 import arcade
 
@@ -48,6 +43,8 @@ CELLS_START_POSITIONS = \
     (3 * BIG_BORDER) + (5 * SMALL_BORDER) + (7 * CELL_SIZE),
     (3 * BIG_BORDER) + (6 * SMALL_BORDER) + (8 * CELL_SIZE)
 ]
+
+########################################################################
 
 gb = []
 for row_i in range(9):
@@ -106,10 +103,10 @@ class MyGame(arcade.Window):
         self.cell_row = 0
         self.cell_col = 0
 
-    def setup(self):
-        """ Set up the game variables. Call to re-start the game. """
-        # Create your sprites and sprite lists here
-        pass
+    #def setup(self):
+    #    """ Set up the game variables. Call to re-start the game. """
+    #    # Create your sprites and sprite lists here
+    #    pass
 
     def on_draw(self):
         """
@@ -124,13 +121,13 @@ class MyGame(arcade.Window):
         draw_small_lines()
         draw_gb()
 
-    def on_update(self, delta_time):
-        """
-        All the logic to move, and the game logic goes here.
-        Normally, you'll call update() on the sprite lists that
-        need it.
-        """
-        pass
+    #def on_update(self, delta_time):
+    #    """
+    #    All the logic to move, and the game logic goes here.
+    #    Normally, you'll call update() on the sprite lists that
+    #    need it.
+    #    """
+    #    pass
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -170,7 +167,7 @@ class MyGame(arcade.Window):
 def main():
     """ Main method """
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    game.setup()
+    #game.setup()
     arcade.run()
 
 
