@@ -44,52 +44,18 @@ CELLS_START_POSITIONS = \
     (3 * BIG_BORDER) + (6 * SMALL_BORDER) + (8 * CELL_SIZE)
 ]
 
-########################################################################
-
 gb = []
 for row_i in range(9):
     gb.append([])
     for col_i in range(9):
         gb[row_i].append(None)
 
-def get_cell_str(row_i, col_i):
-    if gb[row_i][col_i] is None:
-        return ' '
-    return str(gb[row_i][col_i])
-
-def draw_gb():
-    for row_i in range(9):
-        for col_i in range(9):
-            tx, ty = change_coords(CELLS_START_POSITIONS[col_i] + (CELL_SIZE // 2), CELLS_START_POSITIONS[row_i] + (CELL_SIZE // 2))
-            arcade.draw_text(get_cell_str(row_i, col_i), tx, ty, arcade.color.BLACK, 20,
-                             width=40, align='center', anchor_x='center', anchor_y='center')
-
-def get_cell(pos):
-    for i in range(1, 9):
-        if pos < CELLS_START_POSITIONS[i]:
-            return i - 1
-    return 8
-
 def change_coords(x, y):
+    """
+    Change the coords to move the origin point
+    from bottom-left to top-left
+    """
     return (x, SCREEN_HEIGHT - y)
-
-def draw_big_lines():
-    for i in range(4):
-        sx, sy = change_coords(BIG_LINES_POSITIONS[i], 0)
-        ex, ey = change_coords(BIG_LINES_POSITIONS[i], SCREEN_HEIGHT)
-        arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, BIG_BORDER)
-        sx, sy = change_coords(0, BIG_LINES_POSITIONS[i])
-        ex, ey = change_coords(SCREEN_WIDTH, BIG_LINES_POSITIONS[i])
-        arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, BIG_BORDER)
-
-def draw_small_lines():
-    for i in range(6):
-        sx, sy = change_coords(SMALL_LINES_POSITIONS[i], 0)
-        ex, ey = change_coords(SMALL_LINES_POSITIONS[i], SCREEN_HEIGHT)
-        arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, SMALL_BORDER)
-        sx, sy = change_coords(0, SMALL_LINES_POSITIONS[i])
-        ex, ey = change_coords(SCREEN_WIDTH, SMALL_LINES_POSITIONS[i])
-        arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, SMALL_BORDER)
 
 class MyGame(arcade.Window):
 
@@ -117,10 +83,8 @@ class MyGame(arcade.Window):
         # the screen to the background color, and erase what we drew last frame.
         arcade.start_render()
 
-        draw_big_lines()
-        draw_small_lines()
-        draw_gb()
-
+        self.draw_gameboard()
+        
     #def on_update(self, delta_time):
     #    """
     #    All the logic to move, and the game logic goes here.
@@ -161,9 +125,58 @@ class MyGame(arcade.Window):
         Called whenever the mouse moves.
         """
         self.mouse_x, self.mouse_y = change_coords(x, y)
-        self.cell_row = get_cell(self.mouse_y)
-        self.cell_col = get_cell(self.mouse_x)
-        
+        self.cell_row = self.get_cell(self.mouse_y)
+        self.cell_col = self.get_cell(self.mouse_x)
+
+    def _draw_big_lines(self):
+        for i in range(4):
+            sx, sy = change_coords(BIG_LINES_POSITIONS[i], 0)
+            ex, ey = change_coords(BIG_LINES_POSITIONS[i], SCREEN_HEIGHT)
+            arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, BIG_BORDER)
+            sx, sy = change_coords(0, BIG_LINES_POSITIONS[i])
+            ex, ey = change_coords(SCREEN_WIDTH, BIG_LINES_POSITIONS[i])
+            arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, BIG_BORDER)
+
+    def _draw_small_lines(self):
+        for i in range(6):
+            sx, sy = change_coords(SMALL_LINES_POSITIONS[i], 0)
+            ex, ey = change_coords(SMALL_LINES_POSITIONS[i], SCREEN_HEIGHT)
+            arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, SMALL_BORDER)
+            sx, sy = change_coords(0, SMALL_LINES_POSITIONS[i])
+            ex, ey = change_coords(SCREEN_WIDTH, SMALL_LINES_POSITIONS[i])
+            arcade.draw_line(sx, sy, ex, ey, arcade.color.BLACK, SMALL_BORDER)
+
+    def draw_gameboard(self):
+        """
+        Draw the game board
+        """
+        self._draw_big_lines()
+        self._draw_small_lines()
+
+        for row_i in range(9):
+            for col_i in range(9):
+                tx, ty = change_coords(CELLS_START_POSITIONS[col_i] + (CELL_SIZE // 2), 
+                                       CELLS_START_POSITIONS[row_i] + (CELL_SIZE // 2))
+                arcade.draw_text(self.get_cell_str(row_i, col_i), tx, ty, arcade.color.BLACK, 20,
+                                 width=40, align='center', anchor_x='center', anchor_y='center')
+
+    def get_cell_str(self, row_i, col_i):
+        """
+        Get the cell number, or space if empty
+        """
+        if gb[row_i][col_i] is None:
+            return ' '
+        return str(gb[row_i][col_i])
+
+    def get_cell(self, pos):
+        """
+        Get the current cell from mouse position
+        """
+        for i in range(1, 9):
+            if pos < CELLS_START_POSITIONS[i]:
+                return i - 1
+        return 8
+
 def main():
     """ Main method """
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
