@@ -3,6 +3,7 @@ Sudoku solver
 Josué Clément (2021)
 """
 import arcade
+from sudokulib import Sudoku
 
 BIG_BORDER = 4
 SMALL_BORDER = 2
@@ -44,12 +45,6 @@ CELLS_START_POSITIONS = \
     (3 * BIG_BORDER) + (6 * SMALL_BORDER) + (8 * CELL_SIZE)
 ]
 
-gb = []
-for row_i in range(9):
-    gb.append([])
-    for col_i in range(9):
-        gb[row_i].append(None)
-
 def change_coords(x, y):
     """
     Change the coords to move the origin point
@@ -64,15 +59,19 @@ class MyGame(arcade.Window):
 
         arcade.set_background_color(arcade.color.WHITE)
 
+        self.sudo = None
         self.mouse_x = 0
         self.mouse_y = 0
         self.cell_row = 0
         self.cell_col = 0
 
-    #def setup(self):
-    #    """ Set up the game variables. Call to re-start the game. """
-    #    # Create your sprites and sprite lists here
-    #    pass
+    def setup(self):
+        """ Set up the game variables. Call to re-start the game. """
+        self.sudo = Sudoku()
+        self.mouse_x = 0
+        self.mouse_y = 0
+        self.cell_row = 0
+        self.cell_col = 0
 
     def on_draw(self):
         """
@@ -116,9 +115,13 @@ class MyGame(arcade.Window):
             val = 8
         elif key in (arcade.key.KEY_9, arcade.key.NUM_9):
             val = 9
+        elif key in (arcade.key.X, arcade.key.DELETE):
+            self.sudo.gb[self.cell_row][self.cell_col] = None
+        elif key in (arcade.key.SPACE, arcade.key.ENTER):
+            self.try_to_solve()
 
         if val:
-            gb[self.cell_row][self.cell_col] = val
+            self.sudo.gb[self.cell_row][self.cell_col] = val
 
     def on_mouse_motion(self, x, y, delta_x, delta_y):
         """
@@ -157,16 +160,16 @@ class MyGame(arcade.Window):
             for col_i in range(9):
                 tx, ty = change_coords(CELLS_START_POSITIONS[col_i] + (CELL_SIZE // 2), 
                                        CELLS_START_POSITIONS[row_i] + (CELL_SIZE // 2))
-                arcade.draw_text(self.get_cell_str(row_i, col_i), tx, ty, arcade.color.BLACK, 20,
+                arcade.draw_text(self.get_cell_str(row_i, col_i), tx, ty, arcade.color.BLACK, 32,
                                  width=40, align='center', anchor_x='center', anchor_y='center')
 
     def get_cell_str(self, row_i, col_i):
         """
         Get the cell number, or space if empty
         """
-        if gb[row_i][col_i] is None:
+        if self.sudo.gb[row_i][col_i] is None:
             return ' '
-        return str(gb[row_i][col_i])
+        return str(self.sudo.gb[row_i][col_i])
 
     def get_cell(self, pos):
         """
@@ -177,10 +180,20 @@ class MyGame(arcade.Window):
                 return i - 1
         return 8
 
+    def try_to_solve(self):
+        pass_i = 1
+        while(True):
+            print(f"-------------- round {pass_i} -------------")
+            self.sudo.build_possibilities()
+            nb_winners = self.sudo.search_for_winners()
+            if nb_winners == 0:
+                break
+            pass_i += 1
+
 def main():
     """ Main method """
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    #game.setup()
+    game.setup()
     arcade.run()
 
 
