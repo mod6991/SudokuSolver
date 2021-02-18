@@ -5,8 +5,8 @@ Josué Clément (2021)
 import arcade
 from sudokulib import Sudoku
 
-BIG_BORDER = 4
-SMALL_BORDER = 2
+BIG_BORDER = 2
+SMALL_BORDER = 1
 CELL_SIZE = 50
 ROWS, COLS = 9, 9
 
